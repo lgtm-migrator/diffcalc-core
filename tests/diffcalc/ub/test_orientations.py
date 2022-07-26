@@ -47,34 +47,34 @@ class TestOrientationList:
     def test_get_orientation(self):
         pos = Position(0.1, 0.2, 0.3, 0.4, 0.5, 0.6)
         answered = self.orientlist.get_orientation(1).astuple
-        desired = ((1, 2, 3), (0.1, 0.2, 0.3), pos.astuple, "orient1")
+        desired = ((1, 2, 3), (0.1, 0.2, 0.3), (*pos.astuple, True), "orient1")
         assert answered == desired
         answered = self.orientlist.get_orientation("orient1").astuple
         assert answered == desired
 
-    def testRemoveOrientation(self):
+    def test_remove_orientation(self):
         self.orientlist.remove_orientation(1)
         pos = Position(0.11, 0.22, 0.33, 0.44, 0.55, 0.66).astuple
         answered = self.orientlist.get_orientation(1).astuple
-        desired = ((1.1, 2.2, 3.3), (0.11, 0.12, 0.13), pos, "orient2")
+        desired = ((1.1, 2.2, 3.3), (0.11, 0.12, 0.13), (*pos, True), "orient2")
         assert answered == desired
         self.orientlist.remove_orientation("orient2")
         assert self.orientlist.orientations == []
 
-    def testedit_orientation(self):
+    def test_edit_orientation(self):
         ps = Position(0.1, 0.2, 0.3, 0.4, 0.5, 0.6)
         self.orientlist.edit_orientation(1, (10, 20, 30), (1, 2, 3), ps, "new1")
         assert self.orientlist.get_orientation(1).astuple == (
             (10, 20, 30),
             (1, 2, 3),
-            ps.astuple,
+            (*ps.astuple, True),
             "new1",
         )
         pos = Position(0.11, 0.22, 0.33, 0.44, 0.55, 0.66)
         assert self.orientlist.get_orientation(2).astuple == (
             (1.1, 2.2, 3.3),
             (0.11, 0.12, 0.13),
-            pos.astuple,
+            (*pos.astuple, True),
             "orient2",
         )
         self.orientlist.edit_orientation(
@@ -83,7 +83,7 @@ class TestOrientationList:
         assert self.orientlist.get_orientation("new2").astuple == (
             (1.1, 2.2, 3.3),
             (1.11, 1.12, 1.13),
-            pos.astuple,
+            (*pos.astuple, True),
             "new2",
         )
         self.orientlist.edit_orientation(
@@ -92,24 +92,24 @@ class TestOrientationList:
         assert self.orientlist.get_orientation("new1").astuple == (
             (10, 20, 30),
             (1, 2, 3),
-            ps.astuple,
+            (*ps.astuple, True),
             "new1",
         )
 
-    def testSwapOrientation(self):
+    def test_swap_orientation(self):
         self.orientlist.swap_orientations(1, 2)
         pos = Position(0.11, 0.22, 0.33, 0.44, 0.55, 0.66)
         assert self.orientlist.get_orientation(1).astuple == (
             (1.1, 2.2, 3.3),
             (0.11, 0.12, 0.13),
-            pos.astuple,
+            (*pos.astuple, True),
             "orient2",
         )
         pos = Position(0.1, 0.2, 0.3, 0.4, 0.5, 0.6)
         assert self.orientlist.get_orientation(2).astuple == (
             (1, 2, 3),
             (0.1, 0.2, 0.3),
-            pos.astuple,
+            (*pos.astuple, True),
             "orient1",
         )
         self.orientlist.swap_orientations("orient1", "orient2")
@@ -117,13 +117,13 @@ class TestOrientationList:
         assert self.orientlist.get_orientation(2).astuple == (
             (1.1, 2.2, 3.3),
             (0.11, 0.12, 0.13),
-            pos.astuple,
+            (*pos.astuple, True),
             "orient2",
         )
         pos = Position(0.1, 0.2, 0.3, 0.4, 0.5, 0.6)
         assert self.orientlist.get_orientation(1).astuple == (
             (1, 2, 3),
             (0.1, 0.2, 0.3),
-            pos.astuple,
+            (*pos.astuple, True),
             "orient1",
         )

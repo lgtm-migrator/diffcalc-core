@@ -45,7 +45,7 @@ class TestReflectionList:
     def test_get_reflection(self):
         answered = self.reflist.get_reflection(1).astuple
         pos = Position(0.1, 0.2, 0.3, 0.4, 0.5, 0.6)
-        desired = ((1, 2, 3), pos.astuple, 1000, "ref1")
+        desired = ((1, 2, 3), (*pos.astuple, True), 1000, "ref1")
         assert answered == desired
         answered = self.reflist.get_reflection("ref1").astuple
         assert answered == desired
@@ -54,7 +54,7 @@ class TestReflectionList:
         self.reflist.remove_reflection(1)
         answered = self.reflist.get_reflection(1).astuple
         pos = Position(0.11, 0.22, 0.33, 0.44, 0.55, 0.66)
-        desired = ((1.1, 2.2, 3.3), pos.astuple, 1100, "ref2")
+        desired = ((1.1, 2.2, 3.3), (*pos.astuple, True), 1100, "ref2")
         assert answered == desired
         self.reflist.remove_reflection("ref2")
         assert self.reflist.reflections == []
@@ -64,28 +64,28 @@ class TestReflectionList:
         self.reflist.edit_reflection(1, (10, 20, 30), ps, 1000, "new1")
         assert self.reflist.get_reflection(1).astuple == (
             (10, 20, 30),
-            ps.astuple,
+            (*ps.astuple, True),
             1000,
             "new1",
         )
         pos = Position(0.11, 0.22, 0.33, 0.44, 0.55, 0.66)
         assert self.reflist.get_reflection(2).astuple == (
             (1.1, 2.2, 3.3),
-            pos.astuple,
+            (*pos.astuple, True),
             1100,
             "ref2",
         )
         self.reflist.edit_reflection("ref2", (1.1, 2.2, 3.3), pos, 1100, "new2")
         assert self.reflist.get_reflection("new2").astuple == (
             (1.1, 2.2, 3.3),
-            pos.astuple,
+            (*pos.astuple, True),
             1100,
             "new2",
         )
         self.reflist.edit_reflection("new2", (10, 20, 30), pos, 1100, "new1")
         assert self.reflist.get_reflection("new1").astuple == (
             (10, 20, 30),
-            ps.astuple,
+            (*ps.astuple, True),
             1000,
             "new1",
         )
@@ -95,14 +95,14 @@ class TestReflectionList:
         pos = Position(0.11, 0.22, 0.33, 0.44, 0.55, 0.66)
         assert self.reflist.get_reflection(1).astuple == (
             (1.1, 2.2, 3.3),
-            pos.astuple,
+            (*pos.astuple, True),
             1100,
             "ref2",
         )
         pos = Position(0.1, 0.2, 0.3, 0.4, 0.5, 0.6)
         assert self.reflist.get_reflection(2).astuple == (
             (1, 2, 3),
-            pos.astuple,
+            (*pos.astuple, True),
             1000,
             "ref1",
         )
@@ -110,14 +110,14 @@ class TestReflectionList:
         pos = Position(0.11, 0.22, 0.33, 0.44, 0.55, 0.66)
         assert self.reflist.get_reflection(2).astuple == (
             (1.1, 2.2, 3.3),
-            pos.astuple,
+            (*pos.astuple, True),
             1100,
             "ref2",
         )
         pos = Position(0.1, 0.2, 0.3, 0.4, 0.5, 0.6)
         assert self.reflist.get_reflection(1).astuple == (
             (1, 2, 3),
-            pos.astuple,
+            (*pos.astuple, True),
             1000,
             "ref1",
         )

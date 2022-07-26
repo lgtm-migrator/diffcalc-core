@@ -1,6 +1,6 @@
 """Module providing objects for working with reference reflections and orientations."""
 import dataclasses
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from diffcalc.hkl.geometry import Position
 from diffcalc.util import DiffcalcException
@@ -22,8 +22,8 @@ class Reflection:
         Diffractometer position object.
     energy: float
         Beam energy in keV.
-    tag: str
-        Identifying tag for the reflection.
+    tag: Optional[str]
+        Identifying tag for the reflection. Defaults to None.
     """
 
     h: float
@@ -31,14 +31,14 @@ class Reflection:
     l: float
     pos: Position
     energy: float
-    tag: str
+    tag: Optional[str] = None
 
     @property
     def astuple(
         self,
     ) -> Tuple[
         Tuple[float, float, float],
-        Tuple[float, float, float, float, float, float],
+        Tuple[float, float, float, float, float, float, float],
         float,
         str,
     ]:
@@ -54,7 +54,7 @@ class Reflection:
             reflection tag.
         """
         h, k, l, pos, en, tag = dataclasses.astuple(self)
-        return (h, k, l), pos.astuple, en, tag
+        return (h, k, l), pos, en, tag
 
     @property
     def asdict(self) -> Dict[str, Any]:
@@ -64,11 +64,13 @@ class Reflection:
 
     @classmethod
     def fromdict(cls, data: Dict[str, Any]) -> "Reflection":
+        pos_params = data["pos"].copy()
+        indegrees = pos_params.pop("indegrees")
         return cls(
             data["h"],
             data["k"],
             data["l"],
-            Position(**data["pos"]),
+            Position(**pos_params, indegrees=indegrees),
             data["energy"],
             data["tag"],
         )
@@ -111,7 +113,11 @@ class ReflectionList:
         return num
 
     def add_reflection(
-        self, hkl: Tuple[float, float, float], pos: Position, energy: float, tag: str
+        self,
+        hkl: Tuple[float, float, float],
+        pos: Position,
+        energy: float,
+        tag: Optional[str] = None,
     ) -> None:
         """Add a reference reflection.
 
@@ -144,7 +150,7 @@ class ReflectionList:
         hkl: Tuple[float, float, float],
         pos: Position,
         energy: float,
-        tag: str,
+        tag: Optional[str] = None,
     ) -> None:
         """Change a reference reflection.
 
@@ -160,8 +166,8 @@ class ReflectionList:
             Object representing diffractometer angles.
         energy : float
             Energy of the x-ray beam.
-        tag : str
-            Identifying tag for the reflection.
+        tag : Optional[str]
+            Identifying tag for the reflection. Defaults to None
 
         Raises
         ------
@@ -283,7 +289,7 @@ class ReflectionList:
         List[str]
             List containing reference reflection table rows.
         """
-        axes = tuple(fd.upper() for fd in Position.fields)
+        axes = tuple(fd.upper() for fd in Position().angles.keys())
         if not self.reflections:
             return ["   <<< none specified >>>"]
 
@@ -299,7 +305,7 @@ class ReflectionList:
             if tag is None:
                 tag = ""
             fmt = "  %2d %6.3f % 4.2f % 4.2f % 4.2f  " + "% 8.4f " * len(axes) + " %s"
-            values = (n, energy, h, k, l) + pos + (tag,)
+            values = (n, energy, h, k, l) + pos[:-1] + (tag,)
             lines.append(fmt % values)
         return lines
 
@@ -344,7 +350,7 @@ class Orientation:
     y: float
     z: float
     pos: Position
-    tag: str
+    tag: Optional[str] = None
 
     @property
     def astuple(
@@ -352,7 +358,7 @@ class Orientation:
     ) -> Tuple[
         Tuple[float, float, float],
         Tuple[float, float, float],
-        Tuple[float, float, float, float, float, float],
+        Tuple[float, float, float, float, float, float, float],
         str,
     ]:
         """Return reference orientation data as tuple.
@@ -367,7 +373,7 @@ class Orientation:
             position object and orientation tag.
         """
         h, k, l, x, y, z, pos, tag = dataclasses.astuple(self)
-        return (h, k, l), (x, y, z), pos.astuple, tag
+        return (h, k, l), (x, y, z), pos, tag
 
     @property
     def asdict(self) -> Dict[str, Any]:
@@ -377,6 +383,8 @@ class Orientation:
 
     @classmethod
     def fromdict(cls, data: Dict[str, Any]) -> "Orientation":
+        pos_params = data["pos"].copy()
+        indegrees = pos_params.pop("indegrees")
         return cls(
             data["h"],
             data["k"],
@@ -384,7 +392,7 @@ class Orientation:
             data["x"],
             data["y"],
             data["z"],
-            Position(**data["pos"]),
+            Position(**pos_params, indegrees=indegrees),
             data["tag"],
         )
 
@@ -430,7 +438,7 @@ class OrientationList:
         hkl: Tuple[float, float, float],
         xyz: Tuple[float, float, float],
         pos: Position,
-        tag: str,
+        tag: Optional[str] = None,
     ) -> None:
         """Add a reference orientation.
 
@@ -464,7 +472,7 @@ class OrientationList:
         hkl: Tuple[float, float, float],
         xyz: Tuple[float, float, float],
         pos: Position,
-        tag: str,
+        tag: Optional[str] = None,
     ) -> None:
         """Change a reference orientation.
 
@@ -481,8 +489,8 @@ class OrientationList:
             Laboratory frame coordinates of the reference orientation.
         pos: Position
             Object representing diffractometer position.
-        tag : str
-            Identifying tag for the orientation.
+        tag : Optional[str]
+            Identifying tag for the orientation. Defaults to None.
 
         Raises
         ------
@@ -604,7 +612,7 @@ class OrientationList:
         List[str]
             List containing reference orientations table rows.
         """
-        axes = tuple(fd.upper() for fd in Position.fields)
+        axes = tuple(fd.upper() for fd in Position().angles.keys())
         if not self.orientations:
             return ["   <<< none specified >>>"]
 
@@ -616,7 +624,7 @@ class OrientationList:
 
         for n in range(1, len(self.orientations) + 1):
             orient = self.get_orientation(n)
-            (h, k, l), (x, y, z), angles, tag = orient.astuple
+            (h, k, l), (x, y, z), pos, tag = orient.astuple
             if tag is None:
                 tag = ""
             str_format = (
@@ -625,7 +633,7 @@ class OrientationList:
                 + "% 8.4f " * len(axes)
                 + " %s"
             )
-            values = (n, h, k, l, x, y, z) + angles + (tag,)
+            values = (n, h, k, l, x, y, z) + pos[:-1] + (tag,)
             lines.append(str_format % values)
         return lines
 

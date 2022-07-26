@@ -141,12 +141,12 @@ CRYSTAL ORIENTATIONS
         energy = 1.10
         ubcalc.add_reflection((1.1, 1.2, 1.3), pos1, energy)
         result = reflist.get_reflection(1)
-        eq_(result.astuple, ((1.1, 1.2, 1.3), pos1.astuple, 1.10, None))
+        eq_(result.astuple, ((1.1, 1.2, 1.3), (*pos1.astuple, True), 1.10, None))
 
         energy = 2.10
         ubcalc.add_reflection((2.1, 2.2, 2.3), pos2, energy, "atag")
         result = reflist.get_reflection(2)
-        eq_(result.astuple, ((2.1, 2.2, 2.3), pos2.astuple, 2.10, "atag"))
+        eq_(result.astuple, ((2.1, 2.2, 2.3), (*pos2.astuple, True), 2.10, "atag"))
 
         with pytest.raises(DiffcalcException):
             ubcalc.add_reflection((3.1, 3.2, 3.3), pos3, 3.10)
@@ -155,7 +155,7 @@ CRYSTAL ORIENTATIONS
 
         ubcalc.add_reflection((4.1, 4.2, 4.3), pos4, 4.10, "tag2")
         result = reflist.get_reflection(3)
-        eq_(result.astuple, ((4.1, 4.2, 4.3), pos4.astuple, 4.10, "tag2"))
+        eq_(result.astuple, ((4.1, 4.2, 4.3), (*pos4.astuple, True), 4.10, "tag2"))
 
     def test_edit_reflection(self):
         pos1 = Position(1.1, 1.2, 1.3, 1.4, 1.5, 1.6)
@@ -167,7 +167,7 @@ CRYSTAL ORIENTATIONS
 
         reflist = ubcalc.reflist  # for convenience
         result = reflist.get_reflection(1)
-        eq_(result.astuple, ((1.1, 2, 3.1), pos2.astuple, 11, "tag1"))
+        eq_(result.astuple, ((1.1, 2, 3.1), (*pos2.astuple, True), 11, "tag1"))
 
     def test_swap_reflections(self):
         ubcalc = UBCalculation("testing_swapref")

@@ -51,7 +51,7 @@ def demo_hkl_positions():
         print(f"\n{'hkl':<8s}: [{h:1.0f} {k:1.0f} {l:1.0f}]")
         for pos_001, virtual_angles in all_pos:
             if position_in_range(pos_001):
-                for angle, val in pos_001.asdict.items():
+                for angle, val in pos_001.angles.items():
                     print(f"{angle:<8s}:{val:>8.2f}")
                 print("-" * 18)
                 for angle, val in virtual_angles.items():
@@ -60,7 +60,7 @@ def demo_hkl_positions():
     pos1 = Position(3.00, 7.90, 14.79, 0.0, 0.0, 8.30)
     hkl1 = hklcalc.get_hkl(pos1, wavelength)
     print("\nPosition -> hkl")
-    for angle, val in pos1.asdict.items():
+    for angle, val in pos1.angles.items():
         print(f"{angle:<8s}:{val:>8.2f}")
     print("-" * 18)
     print(f"\n{'hkl':<8s}: [{hkl1[0]:1.1f} {hkl1[1]:1.1f} {hkl1[2]:1.1f}]")

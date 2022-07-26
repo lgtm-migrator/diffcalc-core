@@ -73,7 +73,7 @@ class HklCalculation:
         return self.constraints.__str__()
 
     def __repr_mode(self):
-        return repr(self.constraints.asdict)
+        return repr(self.asdict)
 
     def get_hkl(self, pos: Position, wavelength: float) -> Tuple[float, float, float]:
         """Calculate miller indices corresponding to a diffractometer positions.

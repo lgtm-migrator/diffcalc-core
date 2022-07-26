@@ -25,16 +25,13 @@ from tests.diffcalc.scenarios import PosFromI16sEuler
 from tests.test_tools import eq_
 from tests.tools import matrixeq_
 
-UB1 = (
-    array(
-        (
-            (0.9996954135095477, -0.01745240643728364, -0.017449748351250637),
-            (0.01744974835125045, 0.9998476951563913, -0.0003045864904520898),
-            (0.017452406437283505, -1.1135499981271473e-16, 0.9998476951563912),
-        )
+UB1 = array(
+    (
+        (0.9996954135095477, -0.01745240643728364, -0.017449748351250637),
+        (0.01744974835125045, 0.9998476951563913, -0.0003045864904520898),
+        (0.017452406437283505, -1.1135499981271473e-16, 0.9998476951563912),
     )
-    * (2 * pi)
-)
+) * (2 * pi)
 
 EN1 = 12.39842
 REF1a = PosFromI16sEuler(1, 1, 30, 0, 60, 0)
@@ -90,9 +87,9 @@ def test_save_and_restore_ubcalc_with_reflections(tmpdir):
 
     ubcalc2 = UBCalculation.load(filename)
 
-    eq_(ubcalc2.get_reflection(1).astuple, ref1.astuple)
-    eq_(ubcalc2.get_reflection(2).astuple, ref2.astuple)
-    eq_(ubcalc2.get_reflection(3).astuple, ref3.astuple)
+    eq_(ubcalc2.get_reflection(1), ref1)
+    eq_(ubcalc2.get_reflection(2), ref2)
+    eq_(ubcalc2.get_reflection(3), ref3)
 
 
 def test_save_and_restore_ubcalc_with_UB_from_two_ref(tmpdir):

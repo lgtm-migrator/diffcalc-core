@@ -659,7 +659,13 @@ class UBCalculation:
 
     ### Orientations ###
 
-    def add_orientation(self, hkl, xyz, position=None, tag=None):
+    def add_orientation(
+        self,
+        hkl: Tuple[float, float, float],
+        xyz: Tuple[float, float, float],
+        position: Position = None,
+        tag: Optional[str] = None,
+    ):
         """Add a reference orientation.
 
         Adds a reference orientation in the diffractometer
