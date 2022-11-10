@@ -5,13 +5,19 @@ from typing import Tuple
 import numpy as np
 from numpy.linalg import norm
 from pint import UnitRegistry
+from pydantic import BaseSettings
 from scipy.spatial.transform import Rotation
 
-I: np.ndarray = np.identity(3)
 
+class Settings(BaseSettings):
+    angle_unit: str = "degree"
+
+
+I: np.ndarray = np.identity(3)
 SMALL: float = 1e-7
 
 ureg = UnitRegistry()
+unit = Settings().angle_unit
 
 
 def x_rotation(th: float) -> np.ndarray:

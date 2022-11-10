@@ -83,7 +83,7 @@ class TestPersistenceMethods:
     ubcalc = UBCalculation("test_persistence")
     ubcalc.n_phi = (0, 0, 1)  # type: ignore
     ubcalc.surf_nphi = (0, 0, 1)  # type: ignore
-    ubcalc.set_lattice("xtal", LatticeParams(1), "Cubic")
+    ubcalc.set_lattice("xtal", LatticeParams(1.0))
     ubcalc.add_reflection((0, 0, 1), Position(0, 60, 0, 30, 0, 0), 12.4, "ref1")
     ubcalc.add_orientation((0, 1, 0), (0, 1, 0), Position(1, 0, 0, 0, 2, 0), "orient1")
     ubcalc.set_miscut(None, radians(2.0))
@@ -484,13 +484,13 @@ def test_set_miscut(
             (0, 1, 0),
             10,
             (0, 0, 1),
-            Position(radians(40), 0, pi / 3, 0, 0, -pi / 2, "rad"),
+            Position(40, 0, 60, 0, 0, -90),
         ),
         (
             (1, 0, 0),
             30,
             (0, 1, 1),
-            Position(pi / 4, 0, pi / 2, 0, pi / 12, -pi / 2, "rad"),
+            Position(45, 0, 90, 0, 15, -90),
         ),
     ],
 )

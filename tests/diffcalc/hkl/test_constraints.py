@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import pytest
-from diffcalc.hkl.constraints import TYPE, Constraint, Constraints
+from diffcalc.hkl.constraints import Constraints, _con_type, _Constraint
 from diffcalc.util import DiffcalcException, ureg
 from typing_extensions import Literal
 
@@ -61,11 +61,11 @@ def test_init_generates_correct_dictionaries(
 def test_constraining_and_unconstraining_each_constraint(
     cm: Constraints, con_name: str
 ):
-    constraint_def: Constraint = getattr(cm, con_name)
+    constraint_def: _Constraint = getattr(cm, con_name)
 
     value: Union[bool, int] = 1
 
-    if constraint_def.type == TYPE.VOID:
+    if constraint_def._type == _con_type.VOID:
         value = True
 
     cm.constrain(con_name, value)

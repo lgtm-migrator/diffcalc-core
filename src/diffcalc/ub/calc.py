@@ -25,10 +25,12 @@ from diffcalc.util import (
     cross3,
     dot3,
     is_small,
+    ureg,
     xyz_rotation,
     zero_round,
 )
 from numpy.linalg import inv, norm
+from pint import Quantity
 
 
 @dataclasses.dataclass
@@ -384,9 +386,7 @@ class UBCalculation:
 
     ### Lattice ###
 
-    def set_lattice(
-        self, name: str, params: LatticeParams, system: Optional[str] = None
-    ) -> None:
+    def set_lattice(self, name: str, params: LatticeParams) -> None:
         """Set crystal lattice parameters using shortform notation.
 
         Following combinations of system and lattice parameters are supported:
@@ -434,7 +434,7 @@ class UBCalculation:
                 "with newub."
             )
 
-        self.crystal = Crystal(name, params, system)
+        self.crystal = Crystal(name, params)
 
     ### Reference vector ###
     @property
@@ -1071,7 +1071,7 @@ class UBCalculation:
             hkl, position, wavelength
         )
         if scale and refine_lattice:
-            self.set_lattice(name, LatticeParams(*lattice), system)
+            self.set_lattice(name, LatticeParams(*lattice, system=system))
         mc_angle, mc_axis = self.get_miscut_from_hkl(hkl, position)
         if mc_angle and refine_umatrix:
             self.set_miscut(mc_axis, radians(mc_angle), True)
@@ -1121,13 +1121,12 @@ class UBCalculation:
             new_crystal = fit_crystal(self.crystal, refl_list)
             print("Fitting orientation matrix...")
             new_u = fit_u_matrix(self.U, new_crystal, refl_list)
-            new_lattice = tuple(float(i) for i in new_crystal.get_lattice())
+            new_lattice = new_crystal.get_lattice()
 
         if refine_lattice:
             self.set_lattice(
                 self.crystal.name,
-                LatticeParams(*new_lattice),
-                self.crystal.system,
+                LatticeParams(*new_lattice, system=self.crystal.system),
             )
 
         if refine_umatrix:
@@ -1136,7 +1135,7 @@ class UBCalculation:
 
     def _fit_ub_uncon(
         self, indices: Sequence[Union[str, int]]
-    ) -> Tuple[np.ndarray, Tuple[float, ...]]:
+    ) -> Tuple[np.ndarray, Tuple[float, float, float, Quantity, Quantity, Quantity]]:
         """Refine UB matrix using least-squares solution."""
         if indices is None:
             raise DiffcalcException(
@@ -1180,9 +1179,9 @@ class UBCalculation:
         a3 = cross3(b1.T, b2.T) * 2 * pi / V
         ax, bx, cx = float(norm(a1)), float(norm(a2)), float(norm(a3))
 
-        alpha = acos(dot3(a2, a3) / (bx * cx))
-        beta = acos(dot3(a1, a3) / (ax * cx))
-        gamma = acos(dot3(a1, a2) / (ax * bx))
+        alpha = acos(dot3(a2, a3) / (bx * cx)) * ureg.rad
+        beta = acos(dot3(a1, a3) / (ax * cx)) * ureg.rad
+        gamma = acos(dot3(a1, a2) / (ax * bx)) * ureg.rad
 
         return new_umatrix, (
             ax,

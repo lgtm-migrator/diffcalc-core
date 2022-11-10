@@ -11,9 +11,9 @@ References
 from typing import Dict, Tuple, Union
 
 import numpy as np
-from diffcalc.util import I, ureg, x_rotation, y_rotation, z_rotation
+from diffcalc.util import I, unit, ureg, x_rotation, y_rotation, z_rotation
 from numpy.linalg import inv
-from pint import Quantity, Unit
+from pint import Quantity
 
 
 class Position:
@@ -59,7 +59,6 @@ class Position:
         eta: Union[float, Quantity] = 0.0,
         chi: Union[float, Quantity] = 0.0,
         phi: Union[float, Quantity] = 0.0,
-        unit: Union[str, Unit] = ureg.degree,
     ):
         self.mu: Quantity = None
         self.delta: Quantity = None
@@ -71,8 +70,6 @@ class Position:
         for name, val in zip(Position.fields, (mu, delta, nu, eta, chi, phi)):
             if isinstance(val, Quantity):
                 setattr(self, name, val.to(unit))
-            elif isinstance(unit, Unit):
-                setattr(self, name, float(val) * unit)
             else:
                 setattr(self, name, float(val) * ureg(unit))
 
